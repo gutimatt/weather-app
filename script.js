@@ -2,7 +2,7 @@
  * Weather App
  * DONE: Complete getWeatherData() to return json response Promise
  * DONE: Complete searchCity() to get user input and get data using getWeatherData()
- * TODO: Complete showWeatherData() to set the data in the the html file from response
+ * DONE: Complete showWeatherData() to set the data in the the html file from response
  */
 
 // API_KEY for maps api
@@ -10,14 +10,9 @@ let API_KEY = "7059d9d6a515bec4f3e0cbff1b367a39";
 
 /**
  * Retrieve weather data from openweathermap
- * HINT: Use fetch()
- * HINT: URL should look like this: 
- * https://api.openweathermap.org/data/2.5/weather?q=detroit&appid=a8e71c9932b20c4ceb0aed183e6a83bb&units=imperial
  */
 getWeatherData = (city) => {
   const URL = "https://api.openweathermap.org/data/2.5/weather";
-  //HINT: Use template literals to create a url with input and an API key
-  //CODE GOES HERE
   const fullURL = `${URL}?q=${city}&appid=${API_KEY}&units=imperial`;
   const weatherPromise = fetch(fullURL);
   return weatherPromise.then((response)=>{
@@ -25,16 +20,35 @@ getWeatherData = (city) => {
   })
 }
 
+/* 
+* add event listener for weather input on enter 
+*/
+var input = document.getElementById("city-input");
+
+input.addEventListener("keypress", (event) => {
+  if (event.key === "Enter") {
+    event.preventDefault();
+    document.getElementById("Weather_Btn").click();
+  }
+});
+
 /**
  * Retrieve city input and get the weather data
- * HINT: Use the promise returned from getWeatherData()
  */
 searchCity = () => {
   const city = document.getElementById('city-input').value;
-  // CODE GOES HERE
   getWeatherData(city).then((response)=>{
     console.log(response);
-    showWeatherData(response);
+    if (response.cod != 200) {
+      console.log(response.message)
+      document.getElementById('city-name').innerText = response.message;
+      document.getElementById('weather-type').innerText = "----"
+      document.getElementById('temp').innerText = "--"
+      document.getElementById('min-temp').innerText = "--"
+      document.getElementById('max-temp').innerText = "--"
+    } else {
+      showWeatherData(response);
+    }
   }).catch((error) =>{
     console.log(error);
   })
@@ -42,10 +56,8 @@ searchCity = () => {
 
 /**
  * Show the weather data in HTML
- * HINT: make sure to console log the weatherData to see how the data looks like
  */
 showWeatherData = (weatherData) => {
-  //CODE GOES HERE
   document.getElementById('city-name').innerText = weatherData.name;
   document.getElementById('weather-type').innerText = weatherData.weather[0].main;
   document.getElementById('temp').innerText = weatherData.main.temp;
